@@ -32,6 +32,7 @@ class TestHomePage(TestCase):
         News.objects.bulk_create(all_news)
 
     def test_news_count(self):
+        """Тестирование пагинатора: словарь контекста"""
         # Загружаем главную страницу.
         response = self.client.get(self.HOME_URL)
         # Код ответа не проверяем, его уже проверили в тестах маршрутов.
@@ -43,6 +44,7 @@ class TestHomePage(TestCase):
         self.assertEqual(news_count, settings.NEWS_COUNT_ON_HOME_PAGE)
 
     def test_news_order(self):
+        """Тестируем сортировку новостей"""
         response = self.client.get(self.HOME_URL)
         object_list = response.context['object_list']
         # Получаем даты новостей в том порядке, как они выведены на странице.
@@ -77,6 +79,7 @@ class TestDetailPage(TestCase):
             comment.save()
 
     def test_comments_order(self):
+        """Тестируем сортировку комментариев на странице новости"""
         response = self.client.get(self.detail_url)
         # Проверяем, что объект новости находится в словаре контекста
         # под ожидаемым именем - названием модели.
@@ -93,10 +96,12 @@ class TestDetailPage(TestCase):
         self.assertEqual(all_timestamps, sorted_timestamps)
 
     def test_anonymous_client_has_no_form(self):
+        """Тест наличия формы в словаре контекста анонимного клиента"""
         response = self.client.get(self.detail_url)
         self.assertNotIn('form', response.context)
 
     def test_authorized_client_has_form(self):
+        """Тест наличия формы в словаре контекста авторизованного пользователя"""
         # Авторизуем клиент при помощи ранее созданного пользователя.
         self.client.force_login(self.author)
         response = self.client.get(self.detail_url)

@@ -27,6 +27,7 @@ class TestRoutes(TestCase):
         )
 
     def test_pages_availability(self):
+        """Доступность страниц"""
         # Создаём набор тестовых данных - кортеж кортежей.
         # Каждый вложенный кортеж содержит два элемента:
         # имя пути и позиционные аргументы для функции reverse().
@@ -54,6 +55,7 @@ class TestRoutes(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_availability_for_comment_edit_and_delete(self):
+        """Проверка страниц редактирования и удаления комментария"""
         users_statuses = (
             (self.author, HTTPStatus.OK),
             (self.reader, HTTPStatus.NOT_FOUND),
@@ -70,6 +72,7 @@ class TestRoutes(TestCase):
                     self.assertEqual(response.status_code, status)
 
     def test_redirect_for_anonymous_client(self):
+        """Проверка редиректов"""
         # Сохраняем адрес страницы логина:
         login_url = reverse('users:login')
         # В цикле перебираем имена страниц, с которых ожидаем редирект:
