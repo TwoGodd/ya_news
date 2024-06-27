@@ -12,7 +12,7 @@ User = get_user_model()
 
 
 class TestCommentCreation(TestCase):
-    # Текст комментария понадобится в нескольких местах кода, 
+    # Текст комментария понадобится в нескольких местах кода,
     # поэтому запишем его в атрибуты класса.
     COMMENT_TEXT = 'Текст комментария'
 
@@ -105,9 +105,9 @@ class TestCommentEditDelete(TestCase):
             text=cls.COMMENT_TEXT
         )
         # URL для редактирования комментария.
-        cls.edit_url = reverse('news:edit', args=(cls.comment.id,)) 
+        cls.edit_url = reverse('news:edit', args=(cls.comment.id,))
         # URL для удаления комментария.
-        cls.delete_url = reverse('news:delete', args=(cls.comment.id,))  
+        cls.delete_url = reverse('news:delete', args=(cls.comment.id,))
         # Формируем данные для POST-запроса по обновлению комментария.
         cls.form_data = {'text': cls.NEW_COMMENT_TEXT}
 
