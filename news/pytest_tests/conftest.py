@@ -64,4 +64,4 @@ def pk_for_news(news):
 @pytest.fixture
 def pk_for_comment(comment):
     """Получение pk комментария"""
-    return (comment.id,)
+    return (comment.pk,)

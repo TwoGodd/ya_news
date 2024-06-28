@@ -6,6 +6,9 @@ from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
 
+pytestmark = pytest.mark.django_db
+
+
 @pytest.mark.parametrize(
     'name, args',
     (
@@ -46,8 +49,8 @@ def test_pages_availability_for_auth_user(
 @pytest.mark.parametrize(
     'name, args',
     (
-        ('notes:delete', pytest.lazy_fixture('slug_for_args')),
-        ('notes:edit', pytest.lazy_fixture('slug_for_args')),
+        ('news:delete', pytest.lazy_fixture('pk_for_news')),
+        ('news:edit', pytest.lazy_fixture('pk_for_news')),
     ),
 )
 # Передаём в тест анонимный клиент, name проверяемых страниц и args:
