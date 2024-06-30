@@ -29,7 +29,7 @@ class TestCommentCreation(TestCase):
         cls.form_data = {'text': cls.COMMENT_TEXT}
 
     def test_anonymous_user_cant_create_comment(self):
-        """Проверка удаления и редактирования комментария"""
+        """Проверка возможности создания комментария анонимом"""
         # Совершаем запрос от анонимного клиента, в POST-запросе отправляем
         # предварительно подготовленные данные формы с текстом комментария.
         self.client.post(self.url, data=self.form_data)

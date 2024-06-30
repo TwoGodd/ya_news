@@ -8,6 +8,11 @@ from django.utils import timezone
 from news.models import Comment, News
 
 
+class Constants:
+    COMMENT_TEXT = 'Текст комментария'
+    NEW_COMMENT_TEXT = 'Обновлённый комментарий'
+
+
 @pytest.fixture
 def author(django_user_model):
     """Фикстура автора"""
@@ -51,9 +56,8 @@ def comment(author, news):
     """Объект комментария"""
     comment = Comment.objects.create(
         news=news,
-        text='Текст заметки',
+        text=Constants.COMMENT_TEXT,
         author=author,
-
     )
     return comment
 
@@ -67,7 +71,7 @@ def pk_for_news(news):
 @pytest.fixture
 def pk_for_comment(comment):
     """Получение pk комментария"""
-    return (comment.pk,)
+    return (comment.id,)
 
 
 @pytest.fixture
@@ -112,3 +116,31 @@ def get_homepage_objects(news_list, author_client):
     url = reverse('news:home')
     response = author_client.get(url)
     return response.context['object_list']
+
+
+@pytest.fixture
+def form_data():
+    """Данные для POST-запроса по обновлению комментария"""
+    return {'text': Constants.COMMENT_TEXT}
+
+
+@pytest.fixture
+def edit_url(pk_for_comment):
+    return reverse('news:edit', args=pk_for_comment)
+
+
+@pytest.fixture
+def delete_url(pk_for_comment):
+    """URL для удаления комментария"""
+    return reverse('news:delete', args=pk_for_comment)
+
+
+@pytest.fixture
+def url_to_comments(get_news_detail):
+    """Адрес блока с комментариями"""
+    return get_news_detail + '#comments'
+
+
+@pytest.fixture
+def new_comment_data():
+    return {'text': Constants.NEW_COMMENT_TEXT}
