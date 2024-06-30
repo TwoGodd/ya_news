@@ -1,10 +1,10 @@
 from http import HTTPStatus
 
 import pytest
-from news.models import Comment
-from pytest_django.asserts import assertRedirects, assertFormError
-from news.pytest_tests.conftest import Constants
 from news.forms import BAD_WORDS, WARNING
+from news.models import Comment
+from news.pytest_tests.conftest import Constants
+from pytest_django.asserts import assertFormError, assertRedirects
 
 pytestmark = pytest.mark.django_db
 
