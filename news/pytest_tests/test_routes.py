@@ -1,62 +1,59 @@
-from http import HTTPStatus
-
 import pytest
-from django.urls import reverse
+
+from django.test.client import Client
 from pytest_django.asserts import assertRedirects
+
+HTTP_STATUS_OK = 200
+HTTP_STATUS_NOT_FOUND = 404
 
 pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize(
-    'name, args',
+    'reverse_url, parametrized_client, expected_status',
     (
-        ('news:home', None),
-        ('news:detail', pytest.lazy_fixture('pk_for_news')),
-        ('users:login', None),
-        ('users:logout', None),
-        ('users:signup', None),
+        (pytest.lazy_fixture('url_news_home'), Client(), HTTP_STATUS_OK),
+        (pytest.lazy_fixture('url_users_login'), Client(), HTTP_STATUS_OK),
+        (pytest.lazy_fixture('url_users_logout'), Client(), HTTP_STATUS_OK),
+        (pytest.lazy_fixture('url_users_signup'), Client(), HTTP_STATUS_OK),
+        (pytest.lazy_fixture('url_news_detail'), Client(), HTTP_STATUS_OK),
+        (
+            pytest.lazy_fixture('url_news_edit'),
+            pytest.lazy_fixture('author_client'),
+            HTTP_STATUS_OK
+        ),
+        (
+            pytest.lazy_fixture('url_news_edit'),
+            pytest.lazy_fixture('not_author_client'),
+            HTTP_STATUS_NOT_FOUND
+        ),
+        (
+            pytest.lazy_fixture('url_news_delete'),
+            pytest.lazy_fixture('author_client'),
+            HTTP_STATUS_OK
+        ),
+        (
+            pytest.lazy_fixture('url_news_delete'),
+            pytest.lazy_fixture('not_author_client'),
+            HTTP_STATUS_NOT_FOUND
+        ),
     )
 )
-def test_pages_availability_for_anonymous_user(client, name, args):
-    """Тестирование доступности страниц для анонимного пользователя"""
-    url = reverse(name, args=args)
-    response = client.get(url)
-    assert response.status_code == HTTPStatus.OK
-
-
-@pytest.mark.parametrize(
-    'parametrized_client, expected_status',
-    (
-        (pytest.lazy_fixture('not_author_client'), HTTPStatus.NOT_FOUND),
-        (pytest.lazy_fixture('author_client'), HTTPStatus.OK)
-    ),
-)
-@pytest.mark.parametrize(
-    'name',
-    ('news:edit', 'news:delete')
-)
-def test_pages_availability_for_auth_user(
-    parametrized_client, name, pk_for_comment, expected_status
-):
-    """Тестирование доступности страниц редактирования и удаления комментария"""
-    url = reverse(name, args=(pk_for_comment))
-    response = parametrized_client.get(url)
+def test_pages_availability(reverse_url, parametrized_client, expected_status):
+    """Тестирование доступности страниц"""
+    response = parametrized_client.get(reverse_url)
     assert response.status_code == expected_status
 
 
 @pytest.mark.parametrize(
-    'name, args',
+    'reverse_url',
     (
-        ('news:delete', pytest.lazy_fixture('pk_for_news')),
-        ('news:edit', pytest.lazy_fixture('pk_for_news')),
+        (pytest.lazy_fixture('url_news_edit')),
+        (pytest.lazy_fixture('url_news_delete'))
     ),
 )
-# Передаём в тест анонимный клиент, name проверяемых страниц и args:
-def test_redirects(client, name, args):
+def test_redirects(client, reverse_url, url_users_login):
     """Тестирование редиректов"""
-    login_url = reverse('users:login')
-    # Теперь не надо писать никаких if и можно обойтись одним выражением.
-    url = reverse(name, args=args)
-    expected_url = f'{login_url}?next={url}'
-    response = client.get(url)
+    expected_url = f'{url_users_login}?next={reverse_url}'
+    response = client.get(reverse_url)
     assertRedirects(response, expected_url)

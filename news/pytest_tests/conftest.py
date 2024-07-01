@@ -75,9 +75,51 @@ def pk_for_comment(comment):
 
 
 @pytest.fixture
-def get_news_detail(news):
-    """Получение url новости"""
-    return reverse('news:detail', args=(news.id,))
+def url_news_home():
+    """URL на домашнюю страницу"""
+    return reverse('news:home')
+
+
+@pytest.fixture
+def url_news_detail(pk_for_news):
+    """URL на страницу с деталями новости"""
+    return reverse('news:detail', args=pk_for_news)
+
+
+@pytest.fixture
+def url_news_edit(pk_for_comment):
+    """URL на страницу редактирования новости"""
+    return reverse('news:edit', args=pk_for_comment)
+
+
+@pytest.fixture
+def url_news_delete(pk_for_comment):
+    """URL на страницу удаления новости"""
+    return reverse('news:delete', args=pk_for_comment)
+
+
+@pytest.fixture
+def url_users_login():
+    """URL на страницу входа в профиль"""
+    return reverse('users:login')
+
+
+@pytest.fixture
+def url_users_logout():
+    """URL на страницу выхода из профиля"""
+    return reverse('users:logout')
+
+
+@pytest.fixture
+def url_users_signup():
+    """URL на страницу выхода авторизации"""
+    return reverse('users:signup')
+
+
+@pytest.fixture
+def url_to_comments(url_news_detail):
+    """Адрес блока с комментариями"""
+    return url_news_detail + '#comments'
 
 
 @pytest.fixture
@@ -86,12 +128,13 @@ def news_list(news):
     today = datetime.today()
     all_news = []
     for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1):
-        news = News.objects.create(
+        news = News(
             title='Заголовок',
             text='Текст',
             date=today - timedelta(days=index)
         )
         all_news.append(news)
+    News.objects.bulk_create(all_news)
     return
 
 
@@ -99,14 +142,16 @@ def news_list(news):
 def comments_list(news, comment, not_author_client):
     """Создание списка комментариев"""
     now = timezone.now()
+    all_comments = []
     for index in range(10):
-        comment = Comment.objects.create(
+        comment = Comment(
             news=news,
             author=not_author_client,
             text=f'Tекст {index}',
         )
         comment.created = now + timedelta(days=index)
-        comment.save()
+        all_comments.append(comment)
+    Comment.objects.bulk_create()
     return
 
 
@@ -125,22 +170,6 @@ def form_data():
 
 
 @pytest.fixture
-def edit_url(pk_for_comment):
-    return reverse('news:edit', args=pk_for_comment)
-
-
-@pytest.fixture
-def delete_url(pk_for_comment):
-    """URL для удаления комментария"""
-    return reverse('news:delete', args=pk_for_comment)
-
-
-@pytest.fixture
-def url_to_comments(get_news_detail):
-    """Адрес блока с комментариями"""
-    return get_news_detail + '#comments'
-
-
-@pytest.fixture
 def new_comment_data():
+    """Данные для POST-запроса по обновлению комментария"""
     return {'text': Constants.NEW_COMMENT_TEXT}
