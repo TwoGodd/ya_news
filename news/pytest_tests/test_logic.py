@@ -71,8 +71,8 @@ def test_user_cant_delete_comment_of_another_user(
     assert comments_before_test == comments_after_test
 
 
-def test_author_can_edit_comment(
-        author_client, new_comment_data, url_news_edit, url_to_comments, comment):
+def test_author_can_edit_comment(author_client, new_comment_data,
+                                 url_news_edit, url_to_comments, comment):
     """Проверкана редактирование от имени автора комментария"""
     comments_before_test = Comment.objects.get()
     response = author_client.post(url_news_edit, data=new_comment_data)

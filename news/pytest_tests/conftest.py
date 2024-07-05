@@ -43,7 +43,7 @@ def not_author_client(not_author):
 
 @pytest.fixture
 def news():
-    """Фикстура объекта новости"""
+    """Фикстура создания новости"""
     news = News.objects.create(
         title='Заголовок',
         text='Текст',
@@ -53,7 +53,7 @@ def news():
 
 @pytest.fixture
 def comment(author, news):
-    """Объект комментария"""
+    """Фикстура создания комментария"""
     comment = Comment.objects.create(
         news=news,
         text=Constants.COMMENT_TEXT,
