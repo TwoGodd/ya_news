@@ -19,9 +19,9 @@ def test_news_order(get_homepage_objects):
     assert all_dates == sorted_dates
 
 
-def test_comments_order(not_author_client, get_news_detail):
+def test_comments_order(not_author_client, url_news_detail):
     """Тестируем сортировку комментариев на странице новости"""
-    response = not_author_client.get(get_news_detail)
+    response = not_author_client.get(url_news_detail)
     assert 'news' in response.context
     news = response.context['news']
     all_comments = news.comment_set.all()
@@ -30,14 +30,14 @@ def test_comments_order(not_author_client, get_news_detail):
     assert all_timestamps == sorted_timestamps
 
 
-def test_anonymous_client_has_no_form(client, get_news_detail):
+def test_anonymous_client_has_no_form(client, url_news_detail):
     """Тест наличия формы в словаре контекста анонимного клиента"""
-    response = client.get(get_news_detail)
+    response = client.get(url_news_detail)
     assert 'form' not in response.context
 
 
-def test_authorized_client_has_form(author_client, get_news_detail):
+def test_authorized_client_has_form(author_client, url_news_detail):
     """Тест наличия формы в словаре контекста авторизованного пользователя"""
-    response = author_client.get(get_news_detail)
+    response = author_client.get(url_news_detail)
     assert 'form' in response.context
     assert isinstance(response.context['form'], CommentForm)
